@@ -2,49 +2,60 @@
 @section('title','Menu')
 @section('content')
 <div class="container fade-up">
-  <div class="section-title">Daftar Menu Cozy Cafe</div>
-
-  <div class="menu-cards">
-    <div class="card" 
-         data-name="Caramel Macchiato" 
-         data-img="{{ asset('') }}" 
-         data-desc="Campuran espresso, susu, dan karamel yang creamy. Cocok dinikmati saat pagi hari dengan aroma kopi yang menenangkan."
-         data-price="Rp 38.000">
-      <img src="{{ asset('') }}" alt="Caramel Macchiato" class="menu-img">
-      <h3>Caramel Macchiato</h3>
-      <p>Espresso, susu, dan karamel yang creamy.</p>
-    </div>
-
-    <div class="card" 
-         data-name="Matcha Latte" 
-         data-img="{{ asset('images/matcha.jpg') }}" 
-         data-desc="Rasa matcha lembut dengan foam susu yang rich dan aroma teh hijau yang menenangkan."
-         data-price="Rp 35.000">
-      <img src="{{ asset('images/matcha.jpg') }}" alt="Matcha Latte" class="menu-img">
-      <h3>Matcha Latte</h3>
-      <p>Rasa matcha lembut dengan foam susu.</p>
-    </div>
-
-    <div class="card" 
-         data-name="Croissant Butter" 
-         data-img="{{ asset('images/croissant.jpg') }}" 
-         data-desc="Roti croissant lembut dan wangi, dipanggang setiap pagi dengan butter berkualitas tinggi."
-         data-price="Rp 22.000">
-      <img src="{{ asset('images/croissant.jpg') }}" alt="Croissant Butter" class="menu-img">
-      <h3>Croissant Butter</h3>
-      <p>Lembut dan buttery.</p>
-    </div>
+  <div class="section-title">
+    Daftar Menu Cozy Cafe
+    @if(isset($table) && $table)
+      - Meja {{ $table->kode_meja }}
+    @endif
   </div>
-</div>
 
-<!-- Modal -->
-<div class="modal" id="menuModal">
-  <div class="modal-content">
-    <span class="close-btn">&times;</span>
-    <img id="modalImg" src="" alt="">
-    <h2 id="modalTitle"></h2>
-    <p id="modalDesc"></p>
-    <p id="modalPrice" class="modal-price"></p>
-  </div>
+  @if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+  @endif
+
+  @if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+  @endif
+
+  @if($menus->isEmpty())
+    <p>Belum ada menu yang tersedia.</p>
+  @else
+    <div class="menu-cards">
+      @foreach($menus as $m)
+        <div class="card">
+          @php
+            $imgPath = $m->gambar
+              ? asset('storage/'.$m->gambar)
+              : asset('images/menu-placeholder.jpg'); // siapkan gambar default ini
+          @endphp
+
+          <img src="{{ $imgPath }}" alt="{{ $m->nama_menu }}" class="menu-img">
+
+          <h3>{{ $m->nama_menu }}</h3>
+          <p><strong>Rp {{ number_format($m->harga,0,',','.') }}</strong></p>
+          @if($m->deskripsi)
+            <p>{{ $m->deskripsi }}</p>
+          @endif
+
+          <form action="{{ route('order.add') }}" method="POST" style="margin-top:8px;">
+            @csrf
+            <input type="hidden" name="menu_id" value="{{ $m->id }}">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <label for="qty-{{ $m->id }}" style="margin:0;">Qty:</label>
+              <input type="number" name="jumlah" id="qty-{{ $m->id }}"
+                     value="1" min="1" style="width:80px;">
+            </div>
+            <button type="submit" class="btn btn-order" style="margin-top:8px;">
+              Tambah ke Keranjang
+            </button>
+          </form>
+        </div>
+      @endforeach
+    </div>
+
+    <div style="margin-top:24px;">
+      <a href="{{ route('order.cart') }}" class="btn btn-order">Lihat Keranjang</a>
+    </div>
+  @endif
 </div>
 @endsection

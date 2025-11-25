@@ -6,15 +6,22 @@
 <div class="container">
 
   <!-- HERO -->
-  <section id="home" class="hero fade-up">
-    <div class="hero-card fade-up">
-      <h1>Selamat Datang di Cozy Cafe</h1>
+   <div class="hero-card fade-up">
+  <h1>Selamat Datang di Cozy Cafe</h1>
       <p>Nikmati secangkir kopi, suasana hangat, dan roti panggang yang baru matang. Cozy & calm — tempat cocok buat santai atau kerja.</p>
-      <div style="display:flex; gap:12px; margin-top:12px;">
-        <a href="#menu" class="btn btn-order">Lihat Menu</a>
-        <a href="{{ url('/booking') }}" class="btn btn-ghost">Booking</a>
-      </div>
-    </div>
+  <div style="display:flex; gap:12px; margin-top:12px;">
+    <a href="#menu" class="btn btn-ghost">Lihat Menu</a>
+
+    {{-- Tombol order baru --}}
+    <a href="{{ route('order.menu', ['kode_meja' => 'M01']) }}" class="btn btn-order">
+      Order Sekarang
+    </a>
+
+    <a href="{{ url('/booking') }}" class="btn btn-ghost">Booking</a>
+  </div>
+</div>
+
+ 
 
     <div class="hero-media fade-up">
       <img src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=1200&q=80&auto=format&fit=crop" alt="Suasana Cozy Cafe">

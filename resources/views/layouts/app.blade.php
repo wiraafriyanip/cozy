@@ -23,13 +23,22 @@
       </a>
 
       <ul class="nav-links" id="navLinks">
-        <li><a href="{{ url('/') }}#home">Home</a></li>
-        <li><a href="{{ url('/') }}#menu">Menu</a></li>
-        <li><a href="{{ url('/') }}#best">Best Seller</a></li>
-        <li><a href="{{ url('/booking') }}">Booking</a></li>
-        <li><a href="{{ url('/contact') }}">Contact</a></li>
-      </ul>
-      <button class="btn btn-order">Order</button>
+  <li><a href="{{ url('/') }}#home">Home</a></li>
+  <li><a href="{{ url('/menu') }}">Menu</a></li>
+  <li><a href="{{ url('/') }}#best">Best Seller</a></li>
+  <li><a href="{{ url('/booking') }}">Booking</a></li>
+  <li><a href="{{ url('/contact') }}">Contact</a></li>
+
+  {{-- optional: link ke admin --}}
+  <li><a href="{{ route('admin.orders.index') }}">Admin</a></li>
+</ul>
+
+{{-- tombol ORDER langsung ke self-ordering meja M01 --}}
+<button class="btn btn-order"
+        onclick="location.href='{{ route('order.menu', ['kode_meja' => 'M01']) }}'">
+  Order
+</button>
+
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
     </div>
   </nav>
