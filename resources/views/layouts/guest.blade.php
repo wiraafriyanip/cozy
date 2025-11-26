@@ -15,14 +15,15 @@
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @if (!app()->environment('testing'))
+            @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @endif
     </head>
     <body class="font-sans antialiased">
         <div
             class="min-h-screen flex items-center justify-center bg-cover bg-center bg-fixed relative"
             style="background-image: url('{{ asset('images/bg-cafe.jpg') }}');"
         >
-            <!-- Overlay gelap biar card lebih kebaca -->
             <div class="absolute inset-0 bg-black/40"></div>
 
             <div class="relative z-10 w-full max-w-md mx-4">
