@@ -10,6 +10,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\MenuController as AdminMenuController;
 use App\Http\Controllers\Admin\TableController as AdminTableController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,7 @@ Route::get('/', function () {
     return view('home');
 });
 
+// Booking
 Route::get('/booking', function () {
     return view('booking');
 });
@@ -44,6 +46,7 @@ Route::post('/booking', function (Request $r) {
     return back()->with('success', 'Reservasi berhasil dikirim! Terima kasih.');
 });
 
+// Contact
 Route::get('/contact', function () {
     return view('contact');
 });
@@ -60,7 +63,6 @@ Route::post('/contact', function (Request $r) {
 
 /**
  * Halaman Menu (dinamis dari database)
- * Menggunakan MenuController@index
  */
 Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
 
@@ -76,7 +78,6 @@ Route::get('/about', function () {
 
 /**
  * Route default /order → mengarahkan ke meja M01
- * (bisa diubah sesuai kebutuhan)
  */
 Route::get('/order', function () {
     return redirect()->route('order.menu', ['kode_meja' => 'M01']);
@@ -95,17 +96,44 @@ Route::get('/order/thankyou/{orderId}', [OrderController::class, 'thankyou'])->n
 
 /*
 |--------------------------------------------------------------------------
-| ROUTE ADMIN
+| PROFILE (bawaan Breeze)
 |--------------------------------------------------------------------------
-| (Nanti bisa ditambah middleware auth kalau sudah ada login)
+| Ini yang tadi hilang, yang bikin error "Route [profile.edit] not defined"
 */
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    // Pesanan (order) - kasir/dapur
+/*
+|--------------------------------------------------------------------------
+| AUTENTIKASI (Laravel Breeze)
+|--------------------------------------------------------------------------
+*/
+require __DIR__.'/auth.php';
+
+/*
+|--------------------------------------------------------------------------
+| DASHBOARD SETELAH LOGIN
+|--------------------------------------------------------------------------
+| Setelah login → /dashboard → redirect ke admin orders
+*/
+Route::get('/dashboard', function () {
+    return redirect()->route('admin.orders.index');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+/*
+|--------------------------------------------------------------------------
+| ROUTE ADMIN (HANYA SETELAH LOGIN)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    // Pesanan
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::post('/orders/{id}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
 
-    // Menu - kelola menu & upload gambar
+    // Menu
     Route::get('/menus', [AdminMenuController::class, 'index'])->name('menus.index');
     Route::get('/menus/create', [AdminMenuController::class, 'create'])->name('menus.create');
     Route::post('/menus', [AdminMenuController::class, 'store'])->name('menus.store');
@@ -113,7 +141,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/menus/{id}', [AdminMenuController::class, 'update'])->name('menus.update');
     Route::delete('/menus/{id}', [AdminMenuController::class, 'destroy'])->name('menus.destroy');
 
-    // Tables - kelola meja & QR
+    // Meja
     Route::get('/tables', [AdminTableController::class, 'index'])->name('tables.index');
     Route::get('/tables/create', [AdminTableController::class, 'create'])->name('tables.create');
     Route::post('/tables', [AdminTableController::class, 'store'])->name('tables.store');
