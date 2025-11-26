@@ -46,7 +46,8 @@ jobs:
 
       - name: Install Node dependencies
         run: |
-          npm ci
+          # skip optional deps yang khusus Windows (lightningcss-win32-x64-msvc)
+          npm ci --omit=optional
 
       - name: Build frontend assets
         run: |
